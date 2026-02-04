@@ -614,8 +614,8 @@
         <div class="action-buttons">
           <button class="button button-primary" onclick="initiatePayment()">💳 Pay with M-Pesa</button>
           <button class="button button-secondary" onclick="copyTillNumber()">📋 Copy Till</button>
-          <button class="button button-secondary" onclick="shareOnWhatsApp()">📤 Share</button>
-          <button class="button button-success" onclick="confirmParticipation()">✅ I've Paid</button>
+          <button class="button button-secondary" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
+          <button class="button button-success" onclick="confirmParticipation()">I've Paid</button>
           <button class="button button-danger" onclick="resetSelection()">🔄 Reset</button>
         </div>
       </div>
@@ -634,7 +634,7 @@
       <div class="modal-title">جزاك الله خيرًا — May Allah Reward You!</div>
       <div id="thanksText" class="modal-text"></div>
       <div class="modal-actions">
-        <button class="button button-secondary" onclick="shareOnWhatsApp()">📤 Share Campaign</button>
+        <button class="button button-secondary" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
         <button class="button button-primary" onclick="closeModal()">Close</button>
       </div>
     </div>
@@ -780,13 +780,38 @@
       // Copy till number to clipboard for convenience
       navigator.clipboard.writeText(CONFIG.TILL_NUMBER).catch(() => {});
 
-      // Show detailed payment instructions
-      alert(
+      // Try multiple methods to open M-Pesa
+      let mpesaOpened = false;
+
+      // Method 1: Try USSD code (works on most devices)
+      try {
+        window.location.href = 'tel:*234*1*1#';
+        mpesaOpened = true;
+        showToast('📱 Opening M-Pesa... If it doesn\'t open, follow the instructions.');
+      } catch (e) {
+        console.log('USSD method failed');
+      }
+
+      // Method 2: Try SIM Toolkit intent (Android)
+      if (!mpesaOpened) {
+        try {
+          const stkIntent = 'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk;end';
+          window.location.href = stkIntent;
+          mpesaOpened = true;
+          showToast('📱 Opening M-Pesa... If it doesn\'t open, follow the instructions.');
+        } catch (e) {
+          console.log('STK method failed');
+        }
+      }
+
+      // Show instructions after a short delay
+      setTimeout(() => {
+        alert(
 `💳 M-PESA PAYMENT INSTRUCTIONS
 
 Follow these steps to complete your payment:
 
-1️⃣ Open M-Pesa on your phone
+1️⃣ Open M-Pesa on your phone (or dial *234#)
 2️⃣ Select "Lipa na M-Pesa"
 3️⃣ Select "Buy Goods and Services"
 4️⃣ Enter Till Number: ${CONFIG.TILL_NUMBER}
@@ -796,8 +821,11 @@ Follow these steps to complete your payment:
 
 📝 Your Reference: ${reference || '(please select amount first)'}
 
-After payment, click "✅ I've Paid" to record your contribution.`
-      );
+✅ Till number has been copied to your clipboard!
+
+After payment, return here and click "I've Paid" to record your contribution.`
+        );
+      }, 800);
     }
 
     function shareOnWhatsApp() {
@@ -835,12 +863,19 @@ Join us: ${window.location.href}
 
         const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          headers: { 
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({
             amount: amount,
             reference: reference
           })
         });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
         const data = await response.json();
 
@@ -855,11 +890,19 @@ Join us: ${window.location.href}
           
           await refreshStatistics();
         } else {
-          showToast('❌ Failed to record. Please try again.');
+          showToast('❌ Failed to record. Please try again or contact support.');
         }
       } catch (error) {
         console.error('Participation error:', error);
-        showToast('❌ Network error. Please check your connection and try again.');
+        
+        // More specific error messages
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showToast('❌ Network error. Please check your internet connection.');
+        } else if (error.message.includes('CORS')) {
+          showToast('❌ Connection error. The Google Script may need CORS configuration.');
+        } else {
+          showToast('❌ Error occurred. Please try again or contact support.');
+        }
       }
     }
 
