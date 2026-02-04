@@ -608,7 +608,7 @@
         </div>
 
         <div class="instructions">
-          <strong>📱 How to Pay:</strong> Open M-Pesa → Lipa na M-Pesa → Buy Goods → Enter Till <strong>4341738</strong> → Enter Amount → Complete Payment
+          <strong>📱 Quick Payment:</strong> Click "Pay with M-Pesa" to open M-Pesa automatically. Complete your payment there, then return here and click "I've Paid" to confirm.
         </div>
 
         <div class="action-buttons">
@@ -778,52 +778,84 @@
       }
 
       // Copy till number to clipboard
-      navigator.clipboard.writeText(CONFIG.TILL_NUMBER)
-        .then(() => {
-          showToast('✅ Till number copied: ' + CONFIG.TILL_NUMBER);
-        })
-        .catch(() => {
-          showToast('📋 Till number: ' + CONFIG.TILL_NUMBER);
-        });
+      navigator.clipboard.writeText(CONFIG.TILL_NUMBER).catch(() => {});
 
-      // Show clear payment instructions without trying to open apps
+      // Show loading state
+      showToast('📱 Opening M-Pesa...');
+
+      // Save current state before attempting to open M-Pesa
+      saveToLocalStorage();
+
+      let opened = false;
+
+      // Method 1: Try to open M-Pesa app (for users with the app installed)
       setTimeout(() => {
-        alert(
-`💳 M-PESA PAYMENT INSTRUCTIONS
+        try {
+          // Create a hidden iframe to try opening the M-Pesa app
+          const iframe = document.createElement('iframe');
+          iframe.style.display = 'none';
+          iframe.src = 'mpesa://';
+          document.body.appendChild(iframe);
+          
+          setTimeout(() => {
+            document.body.removeChild(iframe);
+          }, 2000);
+          
+          opened = true;
+        } catch (e) {
+          console.log('M-Pesa app method failed:', e);
+        }
 
-Till Number: ${CONFIG.TILL_NUMBER} ✅ COPIED!
-Amount: KSh ${amount.toLocaleString()}
-Reference: ${reference}
+        // Method 2: Also try the package intent for Android
+        try {
+          const link = document.createElement('a');
+          link.href = 'intent://pay#Intent;scheme=mpesa;package=com.safaricom.mpesa;S.browser_fallback_url=about:blank;end';
+          link.click();
+          opened = true;
+        } catch (e) {
+          console.log('Intent method failed:', e);
+        }
+      }, 100);
 
-📱 FOR SIM TOOLKIT USERS (Basic Phones):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. Go to your phone's Menu/Applications
-2. Find "SIM Toolkit" or "STK" or "SIM Services"
-3. Open it and select "M-Pesa"
-4. Select "Lipa na M-Pesa"
-5. Select "Buy Goods and Services"
-6. Enter Till Number: ${CONFIG.TILL_NUMBER}
-   (paste from clipboard or type it)
-7. Enter Amount: ${amount}
-8. Enter your M-Pesa PIN
-9. Confirm payment
+      // Show friendly instructions after short delay
+      setTimeout(() => {
+        const message = opened 
+          ? `M-Pesa should be opening now...
 
-📱 FOR M-PESA APP USERS (Smartphones):
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-1. Open your M-Pesa app
-2. Tap "Lipa na M-Pesa"
-3. Tap "Buy Goods and Services"
-4. Enter Till Number: ${CONFIG.TILL_NUMBER}
-   (paste from clipboard or type it)
-5. Enter Amount: ${amount}
-6. Enter your M-Pesa PIN
-7. Confirm payment
+If it didn't open automatically:
+• Look for M-Pesa app on your phone, OR
+• Go to SIM Toolkit menu and select M-Pesa
 
-✅ After successful payment, return here and click "I've Paid" to record your contribution.
+Then:
+→ Lipa na M-Pesa
+→ Buy Goods and Services
+→ Till: ${CONFIG.TILL_NUMBER} ✅ (copied to clipboard!)
+→ Amount: KSh ${amount.toLocaleString()}
 
-May Allah accept your donation! 🤲`
-        );
-      }, 300);
+After payment, return here and click "I've Paid" to confirm your contribution.
+
+Continue?`
+          : `Ready to pay via M-Pesa!
+
+Please open M-Pesa:
+• M-Pesa App on your phone, OR
+• SIM Toolkit → M-Pesa menu
+
+Then follow these steps:
+→ Lipa na M-Pesa
+→ Buy Goods and Services  
+→ Till: ${CONFIG.TILL_NUMBER} ✅ (copied!)
+→ Amount: KSh ${amount.toLocaleString()}
+
+After payment, return here and click "I've Paid"
+
+Ready to proceed?`;
+
+        if (confirm(message)) {
+          // User confirmed, they can now go pay
+          showToast('💰 Complete payment, then return and click "I\'ve Paid"');
+        }
+      }, 800);
     }
 
     function shareOnWhatsApp() {
