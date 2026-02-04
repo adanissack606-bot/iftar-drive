@@ -643,7 +643,7 @@
   <script>
     // ========== CONFIGURATION ==========
     const CONFIG = {
-      GOOGLE_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzKuajt6yz4L2DnNbDuTf5V9DgdfN4pbLN5OeOvXBpzum-TugnV0x11YpT1e7TiSV-N/exec",
+      GOOGLE_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxgmGgwEFODJr3Q6K9vwz8D706EBUqhZDJqMAyoDVNdl5sspJERk40V-lDgznI8R1rJ/exec",
       TARGET_AMOUNT: 500000,
       TILL_NUMBER: "4341738",
       WHATSAPP_NUMBER: "254727496308"
@@ -780,52 +780,66 @@
       // Copy till number to clipboard for convenience
       navigator.clipboard.writeText(CONFIG.TILL_NUMBER).catch(() => {});
 
-      // Try multiple methods to open M-Pesa
-      let mpesaOpened = false;
+      // Try to open M-Pesa app using various methods
+      let attemptedOpen = false;
 
-      // Method 1: Try USSD code (works on most devices)
+      // Method 1: Try M-Pesa app deep link (for newer M-Pesa app versions)
       try {
-        window.location.href = 'tel:*234*1*1#';
-        mpesaOpened = true;
-        showToast('📱 Opening M-Pesa... If it doesn\'t open, follow the instructions.');
+        const mpesaDeepLink = `mpesa://pay?businessNumber=${CONFIG.TILL_NUMBER}&amount=${amount}&accountReference=${reference}`;
+        window.location.href = mpesaDeepLink;
+        attemptedOpen = true;
+        showToast('📱 Opening M-Pesa app...');
       } catch (e) {
-        console.log('USSD method failed');
+        console.log('M-Pesa deep link failed:', e);
       }
 
-      // Method 2: Try SIM Toolkit intent (Android)
-      if (!mpesaOpened) {
+      // Method 2: Try Android M-Pesa app intent
+      if (!attemptedOpen) {
         try {
-          const stkIntent = 'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk;end';
-          window.location.href = stkIntent;
-          mpesaOpened = true;
-          showToast('📱 Opening M-Pesa... If it doesn\'t open, follow the instructions.');
+          const mpesaIntent = 'intent://pay#Intent;scheme=mpesa;package=com.safaricom.mpesa;end';
+          window.location.href = mpesaIntent;
+          attemptedOpen = true;
+          showToast('📱 Opening M-Pesa app...');
         } catch (e) {
-          console.log('STK method failed');
+          console.log('M-Pesa intent failed:', e);
         }
       }
 
-      // Show instructions after a short delay
+      // Method 3: Try SIM Toolkit (opens M-Pesa menu on SIM)
+      if (!attemptedOpen) {
+        try {
+          const stkIntents = [
+            'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk;end',
+            'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk2;end'
+          ];
+          window.location.href = stkIntents[0];
+          attemptedOpen = true;
+          showToast('📱 Opening M-Pesa...');
+        } catch (e) {
+          console.log('STK method failed:', e);
+        }
+      }
+
+      // Show instructions after attempting to open
       setTimeout(() => {
         alert(
 `💳 M-PESA PAYMENT INSTRUCTIONS
 
-Follow these steps to complete your payment:
+${attemptedOpen ? 'If M-Pesa didn\'t open automatically, please:' : 'Please follow these steps:'}
 
-1️⃣ Open M-Pesa on your phone (or dial *234#)
+1️⃣ Open M-Pesa app (or go to your SIM toolkit)
 2️⃣ Select "Lipa na M-Pesa"
 3️⃣ Select "Buy Goods and Services"
-4️⃣ Enter Till Number: ${CONFIG.TILL_NUMBER}
+4️⃣ Enter Till Number: ${CONFIG.TILL_NUMBER} ✅ (copied!)
 5️⃣ Enter Amount: KSh ${amount.toLocaleString()}
 6️⃣ Enter your M-Pesa PIN
 7️⃣ Confirm payment
 
-📝 Your Reference: ${reference || '(please select amount first)'}
+📝 Your Reference: ${reference}
 
-✅ Till number has been copied to your clipboard!
-
-After payment, return here and click "I've Paid" to record your contribution.`
+After completing payment, return here and click "I've Paid" to record your contribution.`
         );
-      }, 800);
+      }, 1000);
     }
 
     function shareOnWhatsApp() {
@@ -858,28 +872,37 @@ Join us: ${window.location.href}
         return;
       }
 
+      // Show loading state
+      showToast('📝 Recording your participation...');
+
       try {
-        showToast('📝 Recording your participation...');
+        // Create abort controller for timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
 
         const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
           method: 'POST',
-          mode: 'cors',
           headers: { 
-            'Content-Type': 'application/json'
+            'Content-Type': 'text/plain' // Changed from application/json to avoid CORS preflight
           },
           body: JSON.stringify({
             amount: amount,
-            reference: reference
-          })
+            ref: reference,
+            timestamp: new Date().toISOString()
+          }),
+          signal: controller.signal
         });
 
+        clearTimeout(timeoutId);
+
+        // Check if response is ok
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`Server returned ${response.status}: ${response.statusText}`);
         }
 
         const data = await response.json();
 
-        if (data.ok) {
+        if (data && data.ok) {
           state.hasParticipated = true;
           saveToLocalStorage();
           
@@ -888,31 +911,59 @@ Join us: ${window.location.href}
           elements.thanksText.textContent = `Your contribution of ${formatCurrency(amount)} has been recorded. May Allah accept your charity and multiply your reward in this blessed month. جزاك الله خيرًا`;
           elements.thanksModal.style.display = 'block';
           
-          await refreshStatistics();
+          // Refresh statistics
+          setTimeout(() => refreshStatistics(), 500);
         } else {
-          showToast('❌ Failed to record. Please try again or contact support.');
+          throw new Error('Server response indicates failure');
         }
       } catch (error) {
         console.error('Participation error:', error);
         
-        // More specific error messages
-        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-          showToast('❌ Network error. Please check your internet connection.');
+        // Provide helpful error messages
+        if (error.name === 'AbortError') {
+          showToast('❌ Request timed out. Please check your internet connection.');
+        } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+          showToast('❌ Cannot connect to server. Please check your internet connection.');
         } else if (error.message.includes('CORS')) {
-          showToast('❌ Connection error. The Google Script may need CORS configuration.');
+          // This means the Google Apps Script needs to be deployed as a web app with proper access
+          showToast('❌ Server configuration error. Please contact the administrator.');
         } else {
-          showToast('❌ Error occurred. Please try again or contact support.');
+          showToast('❌ Error: ' + error.message);
         }
+        
+        // Log detailed error for debugging
+        console.log('Full error details:', {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        });
       }
     }
 
     // ========== STATISTICS MANAGEMENT ==========
     async function refreshStatistics() {
       try {
-        const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, { method: 'GET' });
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+        const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, { 
+          method: 'GET',
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          console.error('Statistics refresh failed:', response.status);
+          return;
+        }
+
         const data = await response.json();
 
-        if (!data.ok) return;
+        if (!data || !data.ok) {
+          console.error('Invalid statistics data received');
+          return;
+        }
 
         const totalRaised = Number(data.total || 0);
         const participantCount = Number(data.count || 0);
@@ -926,7 +977,8 @@ Join us: ${window.location.href}
         elements.progressText.textContent = `${percentage.toFixed(1)}% of target reached`;
 
       } catch (error) {
-        console.error('Statistics refresh error:', error);
+        // Silently fail for statistics refresh - don't bother the user
+        console.error('Statistics refresh error:', error.name, error.message);
       }
     }
 
