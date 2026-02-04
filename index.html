@@ -777,85 +777,43 @@
         return;
       }
 
-      // Copy till number to clipboard
-      navigator.clipboard.writeText(CONFIG.TILL_NUMBER).catch(() => {});
-
-      // Show loading state
-      showToast('📱 Opening M-Pesa...');
-
-      // Save current state before attempting to open M-Pesa
+      // Save state before they leave
       saveToLocalStorage();
 
-      let opened = false;
+      // Copy till number to clipboard
+      navigator.clipboard.writeText(CONFIG.TILL_NUMBER)
+        .then(() => {
+          showToast('✅ Till number copied: ' + CONFIG.TILL_NUMBER);
+        })
+        .catch(() => {
+          showToast('📋 Ready to pay!');
+        });
 
-      // Method 1: Try to open M-Pesa app (for users with the app installed)
+      // Show simple, clear payment instructions
       setTimeout(() => {
-        try {
-          // Create a hidden iframe to try opening the M-Pesa app
-          const iframe = document.createElement('iframe');
-          iframe.style.display = 'none';
-          iframe.src = 'mpesa://';
-          document.body.appendChild(iframe);
-          
-          setTimeout(() => {
-            document.body.removeChild(iframe);
-          }, 2000);
-          
-          opened = true;
-        } catch (e) {
-          console.log('M-Pesa app method failed:', e);
-        }
+        alert(
+`💰 READY TO PAY
 
-        // Method 2: Also try the package intent for Android
-        try {
-          const link = document.createElement('a');
-          link.href = 'intent://pay#Intent;scheme=mpesa;package=com.safaricom.mpesa;S.browser_fallback_url=about:blank;end';
-          link.click();
-          opened = true;
-        } catch (e) {
-          console.log('Intent method failed:', e);
-        }
-      }, 100);
+Till Number: ${CONFIG.TILL_NUMBER} ✅ COPIED!
+Amount: KSh ${amount.toLocaleString()}
+Reference: ${reference}
 
-      // Show friendly instructions after short delay
-      setTimeout(() => {
-        const message = opened 
-          ? `M-Pesa should be opening now...
+🔹 OPEN M-PESA NOW:
+   • M-Pesa App users: Open your M-Pesa app
+   • SIM Toolkit users: Go to SIM Toolkit → M-Pesa
 
-If it didn't open automatically:
-• Look for M-Pesa app on your phone, OR
-• Go to SIM Toolkit menu and select M-Pesa
+🔹 THEN FOLLOW:
+   1. Lipa na M-Pesa
+   2. Buy Goods and Services
+   3. Enter Till: ${CONFIG.TILL_NUMBER} (paste it!)
+   4. Enter Amount: ${amount}
+   5. Enter PIN → Confirm
 
-Then:
-→ Lipa na M-Pesa
-→ Buy Goods and Services
-→ Till: ${CONFIG.TILL_NUMBER} ✅ (copied to clipboard!)
-→ Amount: KSh ${amount.toLocaleString()}
+✅ After payment, RETURN HERE and click "I've Paid"
 
-After payment, return here and click "I've Paid" to confirm your contribution.
-
-Continue?`
-          : `Ready to pay via M-Pesa!
-
-Please open M-Pesa:
-• M-Pesa App on your phone, OR
-• SIM Toolkit → M-Pesa menu
-
-Then follow these steps:
-→ Lipa na M-Pesa
-→ Buy Goods and Services  
-→ Till: ${CONFIG.TILL_NUMBER} ✅ (copied!)
-→ Amount: KSh ${amount.toLocaleString()}
-
-After payment, return here and click "I've Paid"
-
-Ready to proceed?`;
-
-        if (confirm(message)) {
-          // User confirmed, they can now go pay
-          showToast('💰 Complete payment, then return and click "I\'ve Paid"');
-        }
-      }, 800);
+Your selection is saved - you won't lose it!`
+        );
+      }, 400);
     }
 
     function shareOnWhatsApp() {
