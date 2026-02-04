@@ -4,136 +4,340 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ramadan Iftar Drive | Elwak</title>
+
   <style>
     :root{
       --blue1:#0f4c75; --blue2:#0b3c5d; --blue3:#06283d;
-      --gold:#ffd700; --green:#1eb53a; --card:rgba(255,255,255,.10);
+      --gold:#ffd700; --green:#1eb53a;
+      --glass: rgba(255,255,255,.10);
+      --stroke: rgba(255,255,255,.16);
+      --shadow: 0 24px 55px rgba(0,0,0,.35);
     }
+
+    *{ box-sizing:border-box; }
+
     body{
-      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      background:radial-gradient(circle at top,var(--blue1),var(--blue2),var(--blue3));
-      color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:18px;
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 420px at 18% 10%, rgba(255,215,0,.18), transparent 60%),
+        radial-gradient(900px 420px at 82% 22%, rgba(30,181,58,.16), transparent 55%),
+        radial-gradient(circle at top, var(--blue1), var(--blue2), var(--blue3));
+      color:#fff;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
     }
+
     .wrap{
-      width:min(860px,100%);
-      background:linear-gradient(to bottom right, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
-      border:1px solid rgba(255,255,255,.18);
-      border-radius:22px; padding:22px; box-shadow:0 24px 55px rgba(0,0,0,.35);
-      backdrop-filter: blur(12px);
+      width:min(920px,100%);
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.14), rgba(255,255,255,0.06));
+      border:1px solid var(--stroke);
+      border-radius:24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      overflow:hidden;
     }
-    .top{ text-align:center; }
-    h1{ margin:0; font-size:clamp(1.35rem,3vw,2.1rem); font-weight:900; letter-spacing:.6px; }
-    .sub{ margin:6px 0 12px; color:var(--gold); font-weight:800; letter-spacing:1.6px; text-transform:uppercase; font-size:.85rem; }
-    .text{ margin:0 0 14px; opacity:.95; line-height:1.5; }
+
+    .hero{
+      padding:20px 18px 14px;
+      text-align:center;
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 14px;
+      border-radius:999px;
+      background: rgba(255,215,0,.14);
+      border:1px solid rgba(255,215,0,.35);
+      color:var(--gold);
+      font-weight:800;
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+      font-size:.78rem;
+    }
+
+    h1{
+      margin:14px 0 6px;
+      font-size: clamp(1.55rem, 3.3vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing:.6px;
+      line-height:1.1;
+    }
+
+    .sub{
+      margin:0 auto;
+      max-width: 54rem;
+      opacity:.94;
+      line-height:1.55;
+      font-size: 1.02rem;
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:14px;
+      padding: 0 18px 18px;
+    }
+
+    .card{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;
+      padding:16px;
+    }
+
+    .small{
+      font-size:.95rem;
+      opacity:.94;
+      line-height:1.5;
+      margin:0;
+    }
+
+    .quote{
+      margin-top:12px;
+      padding:14px;
+      border-radius:14px;
+      background: rgba(255,215,0,.10);
+      border:1px solid rgba(255,215,0,.28);
+      line-height:1.5;
+      font-size: .98rem;
+      font-style: italic;
+    }
 
     .grid{
       display:grid;
       grid-template-columns: repeat(4, minmax(0,1fr));
       gap:10px;
-      margin: 12px 0 10px;
+      margin-top:12px;
     }
-    .btn{
-      border:0; border-radius:14px; padding:12px 10px; font-weight:900; cursor:pointer;
-      background: rgba(255,255,255,.16); color:#fff;
-    }
-    .btn:hover{ background: rgba(255,255,255,.22); }
-    .btn.sel{ background: var(--green); box-shadow: 0 10px 22px rgba(30,181,58,.35); }
 
-    .row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:10px; }
-    input{
-      width: 240px; max-width:100%;
-      padding:12px 14px; border-radius:14px;
-      border:1px solid rgba(255,255,255,.25);
-      background: rgba(0,0,0,.18); color:#fff; outline:none; font-size:1rem;
-    }
-    input::placeholder{ color: rgba(255,255,255,.7); }
-
-    .panel{
-      margin-top:14px;
-      padding:14px;
+    .amt{
+      border:1px solid rgba(255,255,255,.12);
       border-radius:16px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(0,0,0,.18);
+      padding:12px 10px;
+      cursor:pointer;
+      color:#fff;
+      font-weight:900;
+      background: rgba(255,255,255,.12);
+      transition: transform .06s ease, background .18s ease, border-color .18s ease;
     }
+    .amt:hover{ background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.20); }
+    .amt:active{ transform: scale(.98); }
+    .amt.sel{
+      background: linear-gradient(135deg, rgba(30,181,58,.95), rgba(30,181,58,.78));
+      border-color: rgba(30,181,58,.55);
+      box-shadow: 0 14px 26px rgba(30,181,58,.22);
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    input{
+      width: 260px; max-width:100%;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.08);
+      color:#fff;
+      outline:none;
+      font-size:1rem;
+    }
+    input::placeholder{ color: rgba(255,255,255,.72); }
+
+    .payHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
+    }
+
+    .pill{
+      display:inline-block;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:800;
+      font-size:.85rem;
+    }
+
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .kpi > div{
+      padding:12px;
+      border-radius:16px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.12);
+    }
+
+    .kpi b{ display:block; font-size:.85rem; opacity:.9; margin-bottom:4px; }
+    .kpi span{ font-size:1.05rem; font-weight:900; }
 
     .tillBox{
       margin-top:10px;
-      padding:14px;
-      border-radius:14px;
-      background: var(--green);
+      border-radius:18px;
+      padding:16px;
+      background: linear-gradient(135deg, rgba(30,181,58,1), rgba(30,181,58,.82));
+      border:1px solid rgba(255,255,255,.20);
+      box-shadow: 0 18px 34px rgba(30,181,58,.20);
       text-align:center;
+    }
+
+    .tillLabel{
       font-weight:900;
-      letter-spacing:1px;
+      letter-spacing:1.6px;
+      text-transform:uppercase;
+      font-size:.85rem;
+      opacity:.95;
     }
-    .tillNum{ font-size:1.9rem; letter-spacing:3px; margin-top:6px; }
-    .mini{ font-size:.92rem; opacity:.9; line-height:1.45; margin:8px 0 0; }
 
-    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; justify-content:center; }
-    .aBtn{
-      border:0; border-radius:14px; padding:12px 14px; font-weight:900; cursor:pointer;
+    .tillNum{
+      margin-top:8px;
+      font-size:2.2rem;
+      font-weight:900;
+      letter-spacing:3px;
     }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:12px;
+      justify-content:center;
+    }
+
+    .btn{
+      border:0;
+      border-radius:16px;
+      padding:12px 14px;
+      font-weight:900;
+      cursor:pointer;
+    }
+
     .primary{ background: var(--gold); color:#0b3c5d; }
-    .secondary{ background: rgba(255,255,255,.16); color:#fff; }
-    .danger{ background: rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.18); }
+    .ghost{ background: rgba(255,255,255,.10); color:#fff; border:1px solid rgba(255,255,255,.14); }
+    .danger{ background: rgba(255,255,255,.06); color:#fff; border:1px solid rgba(255,255,255,.12); }
 
-    .foot{ text-align:center; margin-top:14px; font-size:.9rem; opacity:.85; }
+    .footer{
+      text-align:center;
+      padding: 12px 14px 16px;
+      opacity:.86;
+      font-size:.9rem;
+      border-top: 1px solid rgba(255,255,255,.10);
+    }
 
-    @media (max-width: 700px){
+    @media (max-width: 860px){
+      .content{ grid-template-columns: 1fr; }
       .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .tillNum{ font-size:2.0rem; }
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="top">
-      <h1>RAMADAN IFTAR DRIVE | ELWAK</h1>
-      <div class="sub">Choose a challenge amount</div>
-      <p class="text">Feed a fasting family for the sake of Allah, and earn His blessings.</p>
-    </div>
 
-    <div class="grid" id="amtGrid">
-      <button class="btn" data-amt="100">KSh 100</button>
-      <button class="btn" data-amt="200">KSh 200</button>
-      <button class="btn" data-amt="300">KSh 300</button>
-      <button class="btn" data-amt="500">KSh 500</button>
-      <button class="btn" data-amt="1000">KSh 1,000</button>
-      <button class="btn" data-amt="1500">KSh 1,500</button>
-      <button class="btn" data-amt="2000">KSh 2,000</button>
-      <button class="btn" data-amt="custom">Any Amount</button>
-    </div>
-
-    <div class="row">
-      <input id="customAmt" type="number" min="1" inputmode="numeric" placeholder="Type any amount (e.g., 750)" />
-    </div>
-
-    <div class="panel">
-      <div><b>Selected Amount:</b> <span id="selAmt">None</span></div>
-      <div style="margin-top:6px;"><b>Reference Code:</b> <span id="ref">—</span></div>
-
-      <div class="tillBox">
-        BUY GOODS TILL
-        <div class="tillNum">4341738</div>
-      </div>
-
-      <p class="mini">
-        Click <b>Pay with M-Pesa</b> to open M-Pesa on your phone, then enter Till <b>4341738</b> and your amount. 
-        After paying, click <b>Confirm via WhatsApp</b> to complete your donation.
+    <div class="hero">
+      <div class="badge">RAMADAN IFTAR DRIVE • ELWAK</div>
+      <h1>Feed a fasting family for the sake of Allah</h1>
+      <p class="sub">
+        Select a challenge amount (or enter any amount). Pay to the Till number, then confirm via WhatsApp so we can record your contribution.
       </p>
-
-      <div class="actions">
-        <button class="aBtn primary" onclick="openMpesa()">Pay with M-Pesa</button>
-        <button class="aBtn secondary" onclick="copyTill()">Copy Till Number</button>
-        <button class="aBtn primary" onclick="confirmWhatsApp()">Confirm via WhatsApp</button>
-        <button class="aBtn danger" onclick="resetAll()">Reset</button>
-      </div>
     </div>
 
-    <div class="foot">Ramadan • Mercy • Shared Responsibility</div>
+    <div class="content">
+
+      <!-- LEFT -->
+      <div class="card">
+        <p class="small">
+          <b style="color:var(--gold);">Reward reminder:</b>
+          “Whoever feeds a fasting person will have a reward equal to theirs, without reducing their reward in any way.”
+        </p>
+
+        <div class="grid" id="amtGrid">
+          <button class="amt" data-amt="100">KSh 100</button>
+          <button class="amt" data-amt="200">KSh 200</button>
+          <button class="amt" data-amt="300">KSh 300</button>
+          <button class="amt" data-amt="500">KSh 500</button>
+          <button class="amt" data-amt="1000">KSh 1,000</button>
+          <button class="amt" data-amt="1500">KSh 1,500</button>
+          <button class="amt" data-amt="2000">KSh 2,000</button>
+          <button class="amt" data-amt="custom">Any Amount</button>
+        </div>
+
+        <div class="row">
+          <input id="customAmt" type="number" min="1" inputmode="numeric" placeholder="Type any amount (e.g., 750)" />
+        </div>
+
+        <div class="quote">
+          <b style="color:var(--gold); font-style:normal;">Slogan:</b>
+          Feed a fasting family for the sake of Allah, and earn His mercy and blessings.
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="card">
+        <div class="payHead">
+          <div class="pill">1) Select amount</div>
+          <div class="pill">2) Pay (normal M-Pesa steps)</div>
+          <div class="pill">3) Confirm</div>
+        </div>
+
+        <div class="kpi">
+          <div>
+            <b>Selected Amount</b>
+            <span id="selAmt">None</span>
+          </div>
+          <div>
+            <b>Reference Code</b>
+            <span id="ref">—</span>
+          </div>
+        </div>
+
+        <div class="tillBox">
+          <div class="tillLabel">Buy Goods Till</div>
+          <div class="tillNum">4341738</div>
+        </div>
+
+        <p class="small" style="margin-top:10px;">
+          Tap <b>Pay with M-Pesa</b> for a guided prompt. You will still pay using the normal steps on your phone.
+          After paying, tap <b>Confirm via WhatsApp</b>.
+        </p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="openMpesa()">Pay with M-Pesa</button>
+          <button class="btn ghost" onclick="copyTill()">Copy Till</button>
+          <button class="btn ghost" onclick="copyAmount()">Copy Amount</button>
+          <button class="btn primary" onclick="confirmWhatsApp()">Confirm via WhatsApp</button>
+          <button class="btn danger" onclick="resetAll()">Reset</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">Ramadan • Mercy • Shared Responsibility</div>
   </div>
 
 <script>
-  const ORG_WHATSAPP_NUMBER = "254727496308"; // WhatsApp number for donation confirmations
+  const ORG_WHATSAPP_NUMBER = "254727496308";
   const TILL = "4341738";
 
   let selectedAmount = null;
@@ -141,10 +345,9 @@
   const selAmtEl = document.getElementById("selAmt");
   const refEl = document.getElementById("ref");
   const customAmt = document.getElementById("customAmt");
-  const buttons = document.querySelectorAll(".btn");
+  const buttons = document.querySelectorAll(".amt");
 
   function genRef(){
-    // short unique ref: ELW + date + random
     const d = new Date();
     const y = String(d.getFullYear()).slice(2);
     const m = String(d.getMonth()+1).padStart(2,"0");
@@ -157,7 +360,6 @@
     selectedAmount = val;
     selAmtEl.textContent = `KSh ${val.toLocaleString()}`;
     refEl.textContent = genRef();
-    // Save locally (so user can refresh and not lose)
     localStorage.setItem("elw_amt", String(val));
     localStorage.setItem("elw_ref", refEl.textContent);
   }
@@ -167,6 +369,7 @@
       buttons.forEach(b=>b.classList.remove("sel"));
       btn.classList.add("sel");
       const v = btn.dataset.amt;
+
       if(v === "custom"){
         selectedAmount = null;
         selAmtEl.textContent = "Custom amount";
@@ -193,32 +396,49 @@
   });
 
   function copyTill(){
-    navigator.clipboard.writeText(TILL).then(()=> alert("Till number copied: " + TILL));
+    navigator.clipboard.writeText(TILL).then(()=> alert("Till copied: " + TILL));
   }
-  
+
+  function copyAmount(){
+    const amt = selectedAmount || Number(localStorage.getItem("elw_amt"));
+    if(!amt) return alert("Select an amount first.");
+    navigator.clipboard.writeText(String(amt)).then(()=> alert("Amount copied: KSh " + amt));
+  }
+
   function openMpesa(){
     const amt = selectedAmount || Number(localStorage.getItem("elw_amt"));
+    const ref = refEl.textContent;
+
     if(!amt){
       alert("Please select an amount first.");
       return;
     }
-    // Copy till number first
-    navigator.clipboard.writeText(TILL);
-    
-    // Try to open M-Pesa app (works on most Android phones with Safaricom)
-    const mpesaUrl = `mpesa://till/${TILL}`;
-    window.location.href = mpesaUrl;
-    
-    // Fallback: show instructions if app doesn't open
+
+    // Copy till (reliable)
+    navigator.clipboard.writeText(`${TILL}`).catch(()=>{});
+
+    // Optional attempt: open SIM Toolkit (may or may not work)
+    const intents = [
+      "intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk;end",
+      "intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk2;end"
+    ];
+    try { window.location.href = intents[0]; } catch(e){}
+
+    // Always show clear instructions
     setTimeout(() => {
-      alert(`Till ${TILL} copied! If M-Pesa didn't open:\n\n1. Open M-Pesa app\n2. Select Lipa na M-Pesa\n3. Select Buy Goods\n4. Enter Till: ${TILL}\n5. Enter Amount: KSh ${amt.toLocaleString()}\n6. Complete payment`);
-    }, 1000);
-  }
-  
-  function copyRef(){
-    const r = refEl.textContent;
-    if(!r || r==="—") return alert("Select an amount first.");
-    navigator.clipboard.writeText(r).then(()=> alert("Reference copied."));
+      alert(
+`PAY WITH M-PESA (NORMAL STEPS)
+
+1) Open M-Pesa
+2) Lipa na M-Pesa
+3) Buy Goods
+4) Till Number: ${TILL}
+5) Amount: KSh ${amt.toLocaleString()}
+6) Pay, then return and tap “Confirm via WhatsApp”
+
+Reference: ${ref && ref !== "—" ? ref : "(select amount to generate)"}`
+      );
+    }, 350);
   }
 
   function confirmWhatsApp(){
@@ -249,7 +469,7 @@ May Allah accept.`;
     localStorage.removeItem("elw_ref");
   }
 
-  // Restore if refreshed
+  // Restore after refresh
   const savedAmt = Number(localStorage.getItem("elw_amt"));
   const savedRef = localStorage.getItem("elw_ref");
   if(savedRef) refEl.textContent = savedRef;
