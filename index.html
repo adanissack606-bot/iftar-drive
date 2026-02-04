@@ -777,93 +777,53 @@
         return;
       }
 
-      // Copy till number to clipboard for convenience
-      navigator.clipboard.writeText(CONFIG.TILL_NUMBER).catch(() => {});
-
-      // First, try to open SIM Toolkit M-Pesa (for users without the app)
-      let opened = false;
-
-      // Method 1: SIM Toolkit (most reliable for basic phones and users without app)
-      try {
-        const stkIntents = [
-          'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk;end',
-          'intent://#Intent;action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;package=com.android.stk2;end',
-          'intent://#Intent;SEL;component=com.android.stk/.StkMenuActivity;end'
-        ];
-        
-        // Try all SIM toolkit methods
-        stkIntents.forEach(intent => {
-          try {
-            window.location.href = intent;
-            opened = true;
-          } catch (e) {
-            console.log('STK intent failed:', e);
-          }
+      // Copy till number to clipboard
+      navigator.clipboard.writeText(CONFIG.TILL_NUMBER)
+        .then(() => {
+          showToast('✅ Till number copied: ' + CONFIG.TILL_NUMBER);
+        })
+        .catch(() => {
+          showToast('📋 Till number: ' + CONFIG.TILL_NUMBER);
         });
-        
-        if (opened) {
-          showToast('📱 Opening M-Pesa SIM Toolkit...');
-        }
-      } catch (e) {
-        console.log('SIM Toolkit method failed:', e);
-      }
 
-      // Method 2: Try M-Pesa app (for users who have it installed)
-      if (!opened) {
-        try {
-          const mpesaIntent = 'intent://pay#Intent;scheme=mpesa;package=com.safaricom.mpesa;end';
-          window.location.href = mpesaIntent;
-          opened = true;
-          showToast('📱 Opening M-Pesa app...');
-        } catch (e) {
-          console.log('M-Pesa app intent failed:', e);
-        }
-      }
-
-      // Method 3: Alternative M-Pesa deep link
-      if (!opened) {
-        try {
-          const mpesaDeepLink = `mpesa://pay?businessNumber=${CONFIG.TILL_NUMBER}&amount=${amount}`;
-          window.location.href = mpesaDeepLink;
-          opened = true;
-          showToast('📱 Opening M-Pesa...');
-        } catch (e) {
-          console.log('M-Pesa deep link failed:', e);
-        }
-      }
-
-      // Show instructions after attempting to open
+      // Show clear payment instructions without trying to open apps
       setTimeout(() => {
-        const instructions = opened 
-          ? 'If M-Pesa didn\'t open automatically, please follow these steps:' 
-          : 'Please follow these steps:';
-
         alert(
 `💳 M-PESA PAYMENT INSTRUCTIONS
 
-${instructions}
+Till Number: ${CONFIG.TILL_NUMBER} ✅ COPIED!
+Amount: KSh ${amount.toLocaleString()}
+Reference: ${reference}
 
-📱 **For SIM Toolkit Users:**
-1️⃣ Go to your phone's SIM Toolkit/STK menu
-2️⃣ Select M-Pesa
-3️⃣ Select "Lipa na M-Pesa"
-4️⃣ Select "Buy Goods and Services"
-5️⃣ Enter Till: ${CONFIG.TILL_NUMBER} ✅ (copied!)
-6️⃣ Enter Amount: KSh ${amount.toLocaleString()}
-7️⃣ Enter PIN and confirm
+📱 FOR SIM TOOLKIT USERS (Basic Phones):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Go to your phone's Menu/Applications
+2. Find "SIM Toolkit" or "STK" or "SIM Services"
+3. Open it and select "M-Pesa"
+4. Select "Lipa na M-Pesa"
+5. Select "Buy Goods and Services"
+6. Enter Till Number: ${CONFIG.TILL_NUMBER}
+   (paste from clipboard or type it)
+7. Enter Amount: ${amount}
+8. Enter your M-Pesa PIN
+9. Confirm payment
 
-📱 **For M-Pesa App Users:**
-1️⃣ Open M-Pesa app
-2️⃣ Select "Lipa na M-Pesa" → "Buy Goods"
-3️⃣ Enter Till: ${CONFIG.TILL_NUMBER} ✅ (copied!)
-4️⃣ Enter Amount: KSh ${amount.toLocaleString()}
-5️⃣ Enter PIN and confirm
+📱 FOR M-PESA APP USERS (Smartphones):
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Open your M-Pesa app
+2. Tap "Lipa na M-Pesa"
+3. Tap "Buy Goods and Services"
+4. Enter Till Number: ${CONFIG.TILL_NUMBER}
+   (paste from clipboard or type it)
+5. Enter Amount: ${amount}
+6. Enter your M-Pesa PIN
+7. Confirm payment
 
-📝 Reference: ${reference}
+✅ After successful payment, return here and click "I've Paid" to record your contribution.
 
-After payment, return here and click "I've Paid"`
+May Allah accept your donation! 🤲`
         );
-      }, 1200);
+      }, 300);
     }
 
     function shareOnWhatsApp() {
