@@ -16,7 +16,6 @@
       --overlay-light: rgba(255, 255, 255, 0.14);
       --overlay-dark: rgba(0, 0, 0, 0.18);
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -164,14 +163,12 @@
       transition: all 0.2s ease;
       text-align: center;
     }
-
     .amount-button:hover {
       background: rgba(255, 255, 255, 0.18);
       border-color: rgba(255, 255, 255, 0.22);
       transform: translateY(-1px);
     }
     .amount-button:active { transform: scale(0.98); }
-
     .amount-button.selected {
       background: linear-gradient(135deg, var(--accent-green), rgba(30, 181, 58, 0.85));
       border-color: rgba(30, 181, 58, 0.6);
@@ -190,10 +187,7 @@
       color: #ffffff;
       outline: none;
       font-size: 1rem;
-      font-weight: 500;
-      transition: all 0.2s ease;
     }
-
     .custom-input:focus { border-color: var(--accent-gold); background: rgba(255, 255, 255, 0.12); }
     .custom-input::placeholder { color: rgba(255, 255, 255, 0.7); }
 
@@ -276,7 +270,7 @@
       color: var(--bg-tertiary);
       box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
     }
-    .button-primary:hover { background: #ffdf33; box-shadow: 0 6px 16px rgba(255, 215, 0, 0.4); }
+    .button-primary:hover { background: #ffdf33; }
 
     .button-secondary {
       background: rgba(255, 255, 255, 0.12);
@@ -290,17 +284,14 @@
       color: #ffffff;
       box-shadow: 0 4px 12px rgba(30, 181, 58, 0.3);
     }
-    .button-success:hover {
-      background: linear-gradient(135deg, #22c943, var(--accent-green));
-      box-shadow: 0 6px 16px rgba(30, 181, 58, 0.4);
-    }
+    .button-success:hover { background: linear-gradient(135deg, #22c943, var(--accent-green)); }
 
     .button-danger {
       background: rgba(255, 255, 255, 0.06);
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.12);
     }
-    .button-danger:hover { background: rgba(255, 100, 100, 0.2); border-color: rgba(255, 100, 100, 0.3); }
+    .button-danger:hover { background: rgba(255, 100, 100, 0.18); }
 
     .toast {
       position: fixed;
@@ -332,7 +323,7 @@
     }
 
     .modal {
-      max-width: 560px;
+      max-width: 540px;
       margin: 10vh auto;
       background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -342,15 +333,10 @@
       box-shadow: 0 28px 64px rgba(0, 0, 0, 0.5);
     }
 
-    .modal-title { font-weight: 900; font-size: 1.25rem; color: var(--accent-gold); margin-bottom: 10px; }
-    .modal-text { line-height: 1.65; opacity: 0.95; margin-bottom: 16px; font-size: 1rem; white-space: pre-line; }
+    .modal-title { font-weight: 900; font-size: 1.2rem; color: var(--accent-gold); margin-bottom: 10px; }
+    .modal-text { line-height: 1.65; opacity: 0.95; margin-bottom: 18px; font-size: 1rem; white-space: pre-line; }
 
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
+    .modal-actions { display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
 
     .footer {
       text-align: center;
@@ -453,8 +439,7 @@
         </div>
 
         <div class="instructions">
-          <strong>📱 One-tap payment help:</strong> Tap <b>Pay with M-Pesa</b>. We’ll try to open M-Pesa automatically.
-          If it doesn’t open, tap <b>Dial *334#</b> and follow the short steps.
+          <strong>Fastest:</strong> Tap <b>Pay with M-Pesa</b>. If M-Pesa exists, it opens. If not, your phone opens <b>*334#</b>.
         </div>
 
         <div class="action-buttons">
@@ -473,24 +458,9 @@
 
   <div id="toast" class="toast"></div>
 
-  <!-- PAY HELP MODAL -->
-  <div id="payModal" class="modal-overlay">
-    <div class="modal">
-      <div class="modal-title">Pay Now (Fastest Options)</div>
-      <div id="payText" class="modal-text"></div>
-      <div class="modal-actions">
-        <button class="button button-secondary" onclick="dialUSSD()">📞 Dial *334#</button>
-        <button class="button button-secondary" onclick="copyTillNumber()">📋 Copy Till</button>
-        <button class="button button-secondary" onclick="copyAmount()">📋 Copy Amount</button>
-        <button class="button button-primary" onclick="closePayModal()">Done</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- THANK YOU MODAL -->
   <div id="thanksModal" class="modal-overlay">
     <div class="modal">
-      <div class="modal-title">جزاك الله خيرًا — May Allah Reward You!</div>
+      <div class="modal-title">جزاك الله خيرًا — Thank You!</div>
       <div id="thanksText" class="modal-text"></div>
       <div class="modal-actions">
         <button class="button button-secondary" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
@@ -504,17 +474,12 @@
       GOOGLE_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbxgmGgwEFODJr3Q6K9vwz8D706EBUqhZDJqMAyoDVNdl5sspJERk40V-lDgznI8R1rJ/exec",
       TARGET_AMOUNT: 500000,
       TILL_NUMBER: "4341738",
-      WHATSAPP_NUMBER: "254727496308",
-      USSD_CODE: "*334#"
+      USSD_TEL: "tel:*334%23"
     };
 
-    let state = {
-      selectedAmount: null,
-      reference: null,
-      hasParticipated: false
-    };
+    let state = { selectedAmount: null, reference: null, hasParticipated: false };
 
-    const elements = {
+    const el = {
       totalRaised: document.getElementById('totalRaised'),
       participants: document.getElementById('participants'),
       remaining: document.getElementById('remaining'),
@@ -526,107 +491,90 @@
       toast: document.getElementById('toast'),
       thanksModal: document.getElementById('thanksModal'),
       thanksText: document.getElementById('thanksText'),
-      amountButtons: document.querySelectorAll('.amount-button'),
-      payModal: document.getElementById('payModal'),
-      payText: document.getElementById('payText')
+      amountButtons: document.querySelectorAll('.amount-button')
     };
 
     function generateReference() {
-      const date = new Date();
-      const year = String(date.getFullYear()).slice(2);
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const random = Math.random().toString(36).slice(2, 6).toUpperCase();
-      return `ELW-${year}${month}${day}-${random}`;
+      const d = new Date();
+      const y = String(d.getFullYear()).slice(2);
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const rnd = Math.random().toString(36).slice(2, 6).toUpperCase();
+      return `ELW-${y}${m}${day}-${rnd}`;
     }
 
-    function formatCurrency(amount) {
-      return `KSh ${Number(amount).toLocaleString()}`;
+    function formatCurrency(amount) { return `KSh ${Number(amount).toLocaleString()}`; }
+
+    function showToast(message, duration = 2400) {
+      el.toast.textContent = message;
+      el.toast.classList.add('show');
+      setTimeout(() => el.toast.classList.remove('show'), duration);
     }
 
-    function showToast(message, duration = 2600) {
-      elements.toast.textContent = message;
-      elements.toast.classList.add('show');
-      setTimeout(() => elements.toast.classList.remove('show'), duration);
-    }
-
-    function saveToLocalStorage() {
+    function saveLocal() {
       localStorage.setItem('elwak_amount', String(state.selectedAmount ?? ''));
       localStorage.setItem('elwak_reference', state.reference || '');
       localStorage.setItem('elwak_participated', String(state.hasParticipated));
     }
 
-    function loadFromLocalStorage() {
-      const savedAmount = localStorage.getItem('elwak_amount');
-      const savedReference = localStorage.getItem('elwak_reference');
-      const savedParticipation = localStorage.getItem('elwak_participated') === 'true';
+    function loadLocal() {
+      const a = localStorage.getItem('elwak_amount');
+      const r = localStorage.getItem('elwak_reference');
+      const p = localStorage.getItem('elwak_participated') === 'true';
 
-      if (savedAmount && savedAmount !== '') {
-        state.selectedAmount = Number(savedAmount);
-        elements.selectedAmount.textContent = formatCurrency(savedAmount);
+      if (a && a !== '') {
+        state.selectedAmount = Number(a);
+        el.selectedAmount.textContent = formatCurrency(a);
       }
-
-      if (savedReference) {
-        state.reference = savedReference;
-        elements.reference.textContent = savedReference;
+      if (r) {
+        state.reference = r;
+        el.reference.textContent = r;
       }
-
-      state.hasParticipated = savedParticipation;
+      state.hasParticipated = p;
     }
 
     function setAmount(amount) {
       state.selectedAmount = amount;
       state.reference = generateReference();
-
-      elements.selectedAmount.textContent = formatCurrency(amount);
-      elements.reference.textContent = state.reference;
-
-      saveToLocalStorage();
+      el.selectedAmount.textContent = formatCurrency(amount);
+      el.reference.textContent = state.reference;
+      saveLocal();
     }
 
-    elements.amountButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        elements.amountButtons.forEach(btn => btn.classList.remove('selected'));
-        button.classList.add('selected');
+    el.amountButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.amountButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
 
-        const amount = button.dataset.amount;
-
-        if (amount === 'custom') {
+        const v = btn.dataset.amount;
+        if (v === 'custom') {
           state.selectedAmount = null;
-          elements.selectedAmount.textContent = 'Custom';
+          el.selectedAmount.textContent = 'Custom';
           state.reference = generateReference();
-          elements.reference.textContent = state.reference;
-          saveToLocalStorage();
-          elements.customAmount.focus();
+          el.reference.textContent = state.reference;
+          saveLocal();
+          el.customAmount.focus();
         } else {
-          elements.customAmount.value = '';
-          setAmount(Number(amount));
+          el.customAmount.value = '';
+          setAmount(Number(v));
         }
       });
     });
 
-    elements.customAmount.addEventListener('input', (e) => {
-      const value = Number(e.target.value);
-      if (value > 0) {
-        elements.amountButtons.forEach(btn => btn.classList.remove('selected'));
-        setAmount(value);
+    el.customAmount.addEventListener('input', (e) => {
+      const v = Number(e.target.value);
+      if (v > 0) {
+        el.amountButtons.forEach(b => b.classList.remove('selected'));
+        setAmount(v);
       }
     });
 
-    async function copyText(txt, successMsg) {
-      try {
-        await navigator.clipboard.writeText(txt);
-        showToast(successMsg);
-        return true;
-      } catch {
-        showToast("Copy failed — please copy manually.");
-        return false;
-      }
+    async function copyText(txt, okMsg) {
+      try { await navigator.clipboard.writeText(txt); showToast(okMsg); return true; }
+      catch { showToast("Copy failed — please copy manually."); return false; }
     }
 
-    function copyTillNumber() {
-      return copyText(CONFIG.TILL_NUMBER, `✅ Till copied: ${CONFIG.TILL_NUMBER}`);
-    }
+    function copyTillNumber() { return copyText(CONFIG.TILL_NUMBER, `✅ Till copied: ${CONFIG.TILL_NUMBER}`); }
 
     function copyAmount() {
       const amount = state.selectedAmount || Number(localStorage.getItem('elwak_amount'));
@@ -634,99 +582,55 @@
       return copyText(String(amount), `✅ Amount copied: KSh ${Number(amount).toLocaleString()}`);
     }
 
-    function isAndroid() {
-      return /Android/i.test(navigator.userAgent);
-    }
+    function isAndroid() { return /Android/i.test(navigator.userAgent); }
 
-    // Best-effort attempt to open M-Pesa app (Android). Not guaranteed on all browsers.
-    function tryOpenMpesaApp() {
-      const pkg = "com.safaricom.mpesa.lifestyle";
-      const intentUrl = `intent://#Intent;package=${pkg};end`;
-      window.location.href = intentUrl;
-    }
+    // Best-effort: open M-Pesa app (Android). If it fails, we immediately dial USSD.
+    function openMpesaOrUSSD() {
+      // Try open app
+      if (isAndroid()) {
+        const pkg = "com.safaricom.mpesa.lifestyle";
+        const intentUrl = `intent://#Intent;package=${pkg};end`;
+        window.location.href = intentUrl;
+      }
 
-    function dialUSSD() {
-      // Opens dialer with *334# (user taps Call)
-      window.location.href = "tel:*334%23";
-    }
-
-    function openPayModal(text) {
-      elements.payText.textContent = text;
-      elements.payModal.style.display = "block";
-    }
-
-    function closePayModal() {
-      elements.payModal.style.display = "none";
-    }
-
-    function closeThanksModal() {
-      elements.thanksModal.style.display = "none";
+      // Fallback to USSD dialer almost immediately
+      setTimeout(() => {
+        window.location.href = CONFIG.USSD_TEL;
+      }, 450);
     }
 
     function initiatePayment() {
       const amount = state.selectedAmount || Number(localStorage.getItem('elwak_amount'));
-      const reference = state.reference || localStorage.getItem('elwak_reference') || generateReference();
+      if (!amount) { showToast('⚠️ Please select an amount first'); return; }
 
-      if (!amount) {
-        showToast('⚠️ Please select an amount first');
-        return;
-      }
+      if (!state.reference) state.reference = generateReference();
+      saveLocal();
 
-      // Save selection so they can return without losing it
-      state.reference = reference;
-      saveToLocalStorage();
-
-      // Copy till + amount (reduces friction)
+      // Reduce friction: copy both
       copyTillNumber();
       copyAmount();
 
-      // Try open M-Pesa app on Android (best effort)
-      if (isAndroid()) {
-        // Small delay so copy happens first
-        setTimeout(() => { tryOpenMpesaApp(); }, 120);
-      }
-
-      // Always show fallback modal (so even if app doesn't open, they can continue instantly)
-      setTimeout(() => {
-        openPayModal(
-`FASTEST OPTIONS
-
-A) If M-Pesa app / SIM Toolkit opened:
-• Lipa na M-Pesa → Buy Goods
-• Till: ${CONFIG.TILL_NUMBER}
-• Amount: KSh ${Number(amount).toLocaleString()}
-• Enter PIN
-
-B) If it did NOT open:
-• Tap “Dial *334#” below
-• Select Lipa na M-Pesa → Buy Goods
-• Enter Till: ${CONFIG.TILL_NUMBER}
-• Enter Amount: KSh ${Number(amount).toLocaleString()}
-• Enter PIN
-
-Reference: ${reference}`
-        );
-      }, 500);
+      // Go straight to app/USSD (no instructions)
+      openMpesaOrUSSD();
     }
 
     function shareOnWhatsApp() {
-      const message = `🌙 RAMADAN IFTAR DRIVE | ELWAK
+      const msg = `🌙 RAMADAN IFTAR DRIVE | ELWAK
 
-Feed a fasting family for the sake of Allah and earn immense rewards.
+Feed a fasting family for the sake of Allah.
 
 📍 Buy Goods Till: ${CONFIG.TILL_NUMBER}
 🎯 Target: ${formatCurrency(CONFIG.TARGET_AMOUNT)}
 
-Join & contribute here: ${window.location.href}`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+Contribute here: ${window.location.href}`;
+      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     async function confirmParticipation() {
       const amount = state.selectedAmount || Number(localStorage.getItem('elwak_amount'));
-      const reference = state.reference || localStorage.getItem('elwak_reference');
+      const reference = state.reference || localStorage.getItem('elwak_reference') || generateReference();
 
       if (!amount) return showToast('⚠️ Please select an amount first');
-      if (state.hasParticipated) return showToast('✅ Already recorded on this device');
 
       showToast('📝 Recording your participation...');
 
@@ -737,74 +641,62 @@ Join & contribute here: ${window.location.href}`;
         const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({
-            amount: amount,
-            ref: reference,
-            timestamp: new Date().toISOString()
-          }),
+          body: JSON.stringify({ amount, ref: reference, timestamp: new Date().toISOString() }),
           signal: controller.signal
         });
 
         clearTimeout(timeoutId);
-        if (!response.ok) throw new Error(`Server returned ${response.status}`);
+        if (!response.ok) throw new Error('Bad response');
 
         const data = await response.json();
-        if (!data || !data.ok) throw new Error('Server response indicates failure');
+        if (!data || !data.ok) throw new Error('Not ok');
 
         state.hasParticipated = true;
-        saveToLocalStorage();
+        state.reference = reference;
+        saveLocal();
+
+        el.thanksText.textContent =
+          `Thank you for your generosity.\nMay Allah accept your charity, bless your wealth, and multiply your reward.\nجزاك الله خيرًا`;
+        el.thanksModal.style.display = 'block';
 
         showToast('✅ Recorded successfully!');
-        elements.thanksText.textContent =
-          `Your participation of ${formatCurrency(amount)} has been recorded.\nMay Allah accept it and multiply your reward.`;
+        setTimeout(refreshStatistics, 600);
 
-        elements.thanksModal.style.display = 'block';
-        setTimeout(() => refreshStatistics(), 500);
-
-      } catch (error) {
-        if (error.name === 'AbortError') showToast('❌ Timed out. Check your internet.');
-        else showToast('❌ Could not record. Try again.');
+      } catch {
+        showToast('❌ Could not record. Please try again.');
       }
     }
 
+    function closeThanksModal() { el.thanksModal.style.display = 'none'; }
+
     async function refreshStatistics() {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, { method: 'GET', signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (!response.ok) return;
-
-        const data = await response.json();
+        const res = await fetch(CONFIG.GOOGLE_SCRIPT_URL, { method: 'GET' });
+        if (!res.ok) return;
+        const data = await res.json();
         if (!data || !data.ok) return;
 
-        const totalRaised = Number(data.total || 0);
-        const participantCount = Number(data.count || 0);
-        const remaining = Math.max(0, CONFIG.TARGET_AMOUNT - totalRaised);
-        const percentage = Math.min(100, (totalRaised / CONFIG.TARGET_AMOUNT) * 100);
+        const total = Number(data.total || 0);
+        const count = Number(data.count || 0);
+        const remaining = Math.max(0, CONFIG.TARGET_AMOUNT - total);
+        const pct = Math.min(100, (total / CONFIG.TARGET_AMOUNT) * 100);
 
-        elements.totalRaised.textContent = formatCurrency(totalRaised);
-        elements.participants.textContent = participantCount.toLocaleString();
-        elements.remaining.textContent = formatCurrency(remaining);
-        elements.progressFill.style.width = `${percentage.toFixed(1)}%`;
-        elements.progressText.textContent = `${percentage.toFixed(1)}% of target reached`;
-
+        el.totalRaised.textContent = formatCurrency(total);
+        el.participants.textContent = count.toLocaleString();
+        el.remaining.textContent = formatCurrency(remaining);
+        el.progressFill.style.width = `${pct.toFixed(1)}%`;
+        el.progressText.textContent = `${pct.toFixed(1)}% of target reached`;
       } catch {}
     }
 
     function resetSelection() {
       if (!confirm('Reset your selection on this device?')) return;
+      state = { selectedAmount: null, reference: null, hasParticipated: false };
 
-      state.selectedAmount = null;
-      state.reference = null;
-      state.hasParticipated = false;
-
-      elements.customAmount.value = '';
-      elements.selectedAmount.textContent = 'None';
-      elements.reference.textContent = '—';
-      elements.amountButtons.forEach(btn => btn.classList.remove('selected'));
+      el.customAmount.value = '';
+      el.selectedAmount.textContent = 'None';
+      el.reference.textContent = '—';
+      el.amountButtons.forEach(b => b.classList.remove('selected'));
 
       localStorage.removeItem('elwak_amount');
       localStorage.removeItem('elwak_reference');
@@ -814,15 +706,14 @@ Join & contribute here: ${window.location.href}`;
     }
 
     function initialize() {
-      loadFromLocalStorage();
+      loadLocal();
       refreshStatistics();
       setInterval(refreshStatistics, 30000);
 
-      // Close modals if user taps outside
-      elements.payModal.addEventListener('click', (e) => { if (e.target === elements.payModal) closePayModal(); });
-      elements.thanksModal.addEventListener('click', (e) => { if (e.target === elements.thanksModal) closeThanksModal(); });
+      el.thanksModal.addEventListener('click', (e) => {
+        if (e.target === el.thanksModal) closeThanksModal();
+      });
     }
-
     initialize();
   </script>
 </body>
